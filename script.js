@@ -95,6 +95,7 @@ function createGame() {
     }
 
     function update() {
+        checkCompleteLines()
         checkDeadPiece()
         clearField()
         placePieceOnField()
@@ -124,7 +125,7 @@ function createGame() {
         let positions = realPosition()
         let futurePositions = positions.map(([x, y]) => [x, y + 1])
         
-        let bottom = state.field.length - 1
+        let bottom = state.field.length
         if (futurePositions.some(([x, y]) => y >= bottom || isTouchingDeadPieces(futurePositions))) {
             state.deadPiecesPos = [...state.deadPiecesPos, ...positions]
             getNewPiece()
@@ -167,6 +168,23 @@ function createGame() {
         rotateRigth()
         rotateRigth()
         rotateRigth()
+    }
+
+    function clearRow(index) {
+        let {deadPiecesPos} = state
+        deadPiecesPos = deadPiecesPos.filter(([x, y]) => y != index)
+        deadPiecesPos = deadPiecesPos.map(([x, y]) => y <= index ? [x, y + 1]:[x, y])
+        state.deadPiecesPos = deadPiecesPos
+    }
+
+    function checkCompleteLines() {
+        let {field} = state
+        for (let row of field) {
+            let index = field.indexOf(row)
+            if (!row.includes("")) {
+                clearRow(index)
+            }
+        }
     }
     
     function realPosition() {
