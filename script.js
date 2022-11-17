@@ -148,7 +148,7 @@ function createGame() {
         state.crrPiece.y = 0
     }
 
-    function rotatePiece() {
+    function rotateRigth() {
         let {crrPiece} = state
         let piece = []
         
@@ -161,6 +161,12 @@ function createGame() {
         }
         
         state.crrPiece.piece = piece
+    }
+
+    function rotateLeft() {
+        rotateRigth()
+        rotateRigth()
+        rotateRigth()
     }
     
     function realPosition() {
@@ -186,7 +192,8 @@ function createGame() {
         moveRight,
         moveLeft,
         moveDown,
-        rotatePiece,
+        rotateLeft,
+        rotateRigth,
     }
 }
 
@@ -214,7 +221,8 @@ document.addEventListener("keydown", (event) => {
         "ArrowRight": game.moveRight,
         "ArrowLeft": game.moveLeft,
         "ArrowDown": game.moveDown,
-        " ": game.rotatePiece,
+        "z": game.rotateLeft,
+        "x": game.rotateRigth
     }
 
     if (functions[event.key]) functions[event.key]();
