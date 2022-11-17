@@ -143,8 +143,24 @@ function createGame() {
     }
 
     function getNewPiece() {
-        state.crrPiece.piece = pieces.l
+        let piece = pieces.l
+        state.crrPiece.piece = piece.map(el => [...el])
         state.crrPiece.y = 0
+    }
+
+    function rotatePiece() {
+        let {crrPiece} = state
+        let piece = []
+        
+        for (let col = 0; col < crrPiece.piece[0].length; col++){
+            let newRow = []
+            for (let row = 0; row < crrPiece.piece.length; row++){
+                newRow.unshift(crrPiece.piece[row][col])
+            }
+            piece.push(newRow)
+        }
+        
+        state.crrPiece.piece = piece
     }
     
     function realPosition() {
@@ -170,6 +186,7 @@ function createGame() {
         moveRight,
         moveLeft,
         moveDown,
+        rotatePiece,
     }
 }
 
@@ -197,6 +214,7 @@ document.addEventListener("keydown", (event) => {
         "ArrowRight": game.moveRight,
         "ArrowLeft": game.moveLeft,
         "ArrowDown": game.moveDown,
+        " ": game.rotatePiece,
     }
 
     if (functions[event.key]) functions[event.key]();
