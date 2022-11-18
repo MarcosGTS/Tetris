@@ -1,17 +1,21 @@
-
-
-
-
 const CELL_SIZE = 30
 const FRAME_RATE = 1000
+const BACKGROUND_COLOR = "darkslategrey"
 
 function render(context, field) {
     for(let row in field) {
         for (let col in field[0]) {
-            context.fillStyle = field[row][col] || "white"
+            context.fillStyle = field[row][col] || BACKGROUND_COLOR
+            context.strokeStyle = "black"
             context.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+            context.strokeRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
         }
     }
+}
+
+function pickRandom(list) {
+    const randomIndex = Math.floor(Math.random() * list.length)
+    return list[randomIndex]
 }
 
 function createGame() {
@@ -49,14 +53,48 @@ function createGame() {
     }
 
     let pieces = [
-        [["*","*", ""],
-         ["", "*","*"]],
-        [["*", ""],
-         ["*", ""],
-         ["*", "*"]],
+        {
+            shape: [["*", "*", ""],
+                    ["", "*", "*"]],
+            color: "red",
+        },
+        {
+            shape: [["", "*", "*"],
+                    ["*", "*", ""]],
+            color: "aqua",
+        },
+        {
+            shape: [["", "*", ""],
+                    ["*", "*", "*"]],
+            color: "orange",
+        },
+        {
+            shape: [["*", ""],
+                    ["*", ""],
+                    ["*", "*"]],
+            color: "purple",
+        },
+        {
+            shape: [["", "*"],
+                    ["", "*"],
+                    ["*", "*"]],
+            color: "green",
+        },
+        {
+            shape: [["*", "*"],
+                    ["*", "*"]],
+            color: "yellow",
+        },
+        {
+            shape: [["*"],
+                    ["*"],
+                    ["*"], 
+                    ["*"]],  
+            color: "blue",
+        },
     ]
 
-    state.crrPiece.piece = pieces[0];
+    getNewPiece()
 
     function placePieceOnField() {
         let fieldPosition = realPosition();
@@ -155,8 +193,11 @@ function createGame() {
     }
 
     function getNewPiece() {
-        let piece = pieces[0]
-        state.crrPiece.piece = piece.map(el => [...el])
+        let piece = pickRandom(pieces)
+        let color = piece.color
+
+        state.crrPiece.piece = piece.shape.map(el => [...el])
+        state.crrPiece.color = color
         state.crrPiece.y = -3
     }
 
@@ -244,8 +285,6 @@ let gameLoop = null;
 
 canvas.height = game.state.field.length * CELL_SIZE
 canvas.width = game.state.field[0].length * CELL_SIZE
-
-
 
 function SetGameLoop() {
     
