@@ -38,32 +38,32 @@ function createGame() {
             ["","","","","","","","","",""],
             ["","","","","","","","","",""],
             ["","","","","","","","","",""],],
-        deadPiecesPos: [],
+        deadPieces: [],
         crrPiece:{
             "piece": null,
             "x": 2,
             "y": 3,
+            "color": "red"
         }
 
     }
 
-    let pieces = {
-        "s":[["red","red", ""],
-             ["", "red","red"],
-             ["", "", ""]],
-        "l":[["blue","", ""],
-             ["blue", "",""],
-             ["blue", "blue", ""]],
-    }
+    let pieces = [
+        [["*","*", ""],
+         ["", "*","*"]],
+        [["*", ""],
+         ["*", ""],
+         ["*", "*"]],
+    ]
 
-    state.crrPiece.piece = pieces.l;
+    state.crrPiece.piece = pieces[0];
 
     function placePieceOnField() {
         let fieldPosition = realPosition();
 
         for (let [col, row] of fieldPosition) { 
             if (state.field[row])    
-                state.field[row][col] = "red"
+                state.field[row][col] = state.crrPiece.color
         }
     }
 
@@ -90,9 +90,11 @@ function createGame() {
             ["","","","","","","","","",""],
             ["","","","","","","","","",""],]
 
-        for(let [col, row] of state.deadPiecesPos) {
+        for(let deadPiece of state.deadPieces) {
+            let col = deadPiece.x
+            let row = deadPiece.y
             if (state.field[row])
-                state.field[row][col] = "black"
+                state.field[row][col] = deadPiece.color
         }
     }
 
@@ -130,14 +132,20 @@ function createGame() {
         
         let bottom = state.field.length
         if (futurePositions.some(([x, y]) => y >= bottom || isTouchingDeadPieces(futurePositions))) {
-            state.deadPiecesPos = [...state.deadPiecesPos, ...positions]
+            const deadPieces = positions.map(([x, y]) => {
+                return {x, y, color: state.crrPiece.color}
+            })
+            
+            state.deadPieces = [...state.deadPieces, ...deadPieces]
             getNewPiece()
         }    
     }
     
     function isTouchingDeadPieces(pieces) {
 
-        for (let [col, row] of state.deadPiecesPos) {
+        for (let deadPiece of state.deadPieces) {
+            let col = deadPiece.x
+            let row = deadPiece.y
             for (let [pieceX, pieceY] of pieces) {
                 if (pieceX == col && pieceY == row) return true
             }
@@ -147,7 +155,7 @@ function createGame() {
     }
 
     function getNewPiece() {
-        let piece = pieces.l
+        let piece = pieces[0]
         state.crrPiece.piece = piece.map(el => [...el])
         state.crrPiece.y = -3
     }
@@ -174,10 +182,13 @@ function createGame() {
     }
 
     function clearRow(index) {
-        let {deadPiecesPos} = state
-        deadPiecesPos = deadPiecesPos.filter(([x, y]) => y != index)
-        deadPiecesPos = deadPiecesPos.map(([x, y]) => y <= index ? [x, y + 1]:[x, y])
-        state.deadPiecesPos = deadPiecesPos
+        let {deadPieces} = state
+        deadPieces = deadPieces.filter((piece) => piece.y != index)
+        deadPieces = deadPieces.map((piece) => {
+            if (piece.y <= index) piece.y++
+            return piece
+        })
+        state.deadPieces = deadPieces
     }
 
     function checkCompleteLines() {
@@ -208,7 +219,7 @@ function createGame() {
     }
 
     function checkGameOver() {
-        let isGameOver = state.deadPiecesPos.some(([x, y]) => y < 0)    
+        let isGameOver = state.deadPieces.some((piece) => piece.y < 0)    
         if (isGameOver) state.running = false
 
     }
