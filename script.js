@@ -91,11 +91,13 @@ function createGame() {
             ["","","","","","","","","",""],]
 
         for(let [col, row] of state.deadPiecesPos) {
-            state.field[row][col] = "black"
+            if (state.field[row])
+                state.field[row][col] = "black"
         }
     }
 
     function update() {
+        checkGameOver()
         checkCompleteLines()
         checkDeadPiece()
         clearField()
@@ -205,6 +207,12 @@ function createGame() {
         return fieldPositions
     }
 
+    function checkGameOver() {
+        let isGameOver = state.deadPiecesPos.some(([x, y]) => y < 0)    
+        if (isGameOver) state.running = false
+
+    }
+
     return {
         state,
         update,
@@ -216,24 +224,37 @@ function createGame() {
     }
 }
 
+let startBtn = document.getElementById("start")
 let canvas = document.getElementById("myCanvas")
 let context = canvas.getContext('2d')
+
 let game = createGame()
+let gameLoop = null;
 
 canvas.height = game.state.field.length * CELL_SIZE
 canvas.width = game.state.field[0].length * CELL_SIZE
 
-let gameLoop = null;
+
 
 function SetGameLoop() {
-    if (!game.state.running) clearTimeout(gameLoop)
+    
+    if (!game.state.running) {
+        clearTimeout(gameLoop)
+        console.log("Game Over")
+        return;
+    }
+
     game.moveDown()
     game.update()
     render(context, game.state.field)
     gameLoop = setTimeout(SetGameLoop, FRAME_RATE)
 }
 
-SetGameLoop()
+start.addEventListener("click", () =>  {
+    game = createGame()
+    clearTimeout(gameLoop)
+    SetGameLoop()
+})
 
 document.addEventListener("keydown", (event) => {
     let functions = {
