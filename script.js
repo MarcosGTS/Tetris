@@ -61,8 +61,9 @@ function createGame() {
     function placePieceOnField() {
         let fieldPosition = realPosition();
 
-        for (let [col, row] of fieldPosition) {  
-            state.field[row][col] = "red"
+        for (let [col, row] of fieldPosition) { 
+            if (state.field[row])    
+                state.field[row][col] = "red"
         }
     }
 
@@ -146,7 +147,7 @@ function createGame() {
     function getNewPiece() {
         let piece = pieces.l
         state.crrPiece.piece = piece.map(el => [...el])
-        state.crrPiece.y = 0
+        state.crrPiece.y = -3
     }
 
     function rotateRigth() {
