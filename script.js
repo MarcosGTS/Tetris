@@ -224,7 +224,7 @@ function createGame() {
         let newPiece = rotateMatrix(crrPiece.piece)
         
         let fieldPosition = realPosition(newPiece, crrPiece.pos)
-        if (!isTouchingDeadPieces(fieldPosition))
+        if (!isTouchingDeadPieces(fieldPosition) && isInsideField(fieldPosition))
             state.crrPiece.piece = newPiece
     }
 
@@ -235,7 +235,7 @@ function createGame() {
         newPiece = rotateMatrix(newPiece)
 
         let fieldPosition = realPosition(newPiece, crrPiece.pos)
-        if (!isTouchingDeadPieces(fieldPosition))
+        if (!isTouchingDeadPieces(fieldPosition) && isInsideField(fieldPosition))
             state.crrPiece.piece = newPiece
     }
 
@@ -260,7 +260,7 @@ function createGame() {
     }
     
     function realPosition(piece, pos) {
-        let fieldPositions = []
+        let fieldPosition = []
         
         for (let row in piece) {
             for (let col in piece[0]) {
@@ -268,11 +268,19 @@ function createGame() {
                 let fieldY = pos.y + parseInt(row)
                 
                 if (piece[row][col])
-                    fieldPositions.push([fieldX,fieldY])
+                    fieldPosition.push([fieldX,fieldY])
             }
         }
 
-        return fieldPositions
+        return fieldPosition
+    }
+
+    function isInsideField(fieldPosition) {
+        for (let [col, row] of fieldPosition) {
+            if (col < 0 || col > state.field[0].length - 1) return false
+        }
+
+        return true
     }
 
     function checkGameOver() {
