@@ -44,10 +44,9 @@ function createGame() {
             ["","","","","","","","","",""],],
         deadPieces: [],
         crrPiece:{
-            "piece": null,
-            "x": 2,
-            "y": 3,
-            "color": "red"
+            piece: null,
+            pos:{x: 2, y: 3,},
+            color: "red"
         }
 
     }
@@ -97,7 +96,8 @@ function createGame() {
     getNewPiece()
 
     function placePieceOnField() {
-        let fieldPosition = realPosition();
+        let {crrPiece} = state
+        let fieldPosition = realPosition(crrPiece.piece, crrPiece.pos)
 
         for (let [col, row] of fieldPosition) { 
             if (state.field[row])    
@@ -144,27 +144,30 @@ function createGame() {
     }
 
     function moveDown() {
-        state.crrPiece.y++
+        state.crrPiece.pos.y++
     }
 
     function moveLeft() {
-        let positions = realPosition()
+        let {crrPiece} = state
+        let positions = realPosition(crrPiece.piece, crrPiece.pos)
         let futurePositions = positions.map(([x, y]) => [x - 1, y])
 
         if (!positions.some(([x, y]) => x <= 0 ) && !isTouchingDeadPieces(futurePositions))
-            state.crrPiece.x--
+            state.crrPiece.pos.x--
     }
 
     function moveRight() {
-        let positions = realPosition()
+        let {crrPiece} = state
+        let positions = realPosition(crrPiece.piece, crrPiece.pos)
         let futurePositions = positions.map(([x, y]) => [x + 1, y])
         let rightEdge = state.field[0].length - 1
         if (!positions.some(([x, y]) => x >= rightEdge) && !isTouchingDeadPieces(futurePositions))
-            state.crrPiece.x++
+            state.crrPiece.pos.x++
     }
 
     function checkDeadPiece() {
-        let positions = realPosition()
+        let {crrPiece} = state
+        let positions = realPosition(crrPiece.piece, crrPiece.pos)
         let futurePositions = positions.map(([x, y]) => [x, y + 1])
         
         let bottom = state.field.length
@@ -198,28 +201,42 @@ function createGame() {
 
         state.crrPiece.piece = piece.shape.map(el => [...el])
         state.crrPiece.color = color
-        state.crrPiece.y = -3
+        state.crrPiece.pos.y = -3
+    }
+
+    function rotateMatrix(matrix) {
+        let newMatrix = []
+        
+        for (let col = 0; col < matrix[0].length; col++){
+            let newRow = []
+            for (let row = 0; row < matrix.length; row++){
+                newRow.unshift(matrix[row][col])
+            }
+            newMatrix.push(newRow)
+        }
+
+        console.log(newMatrix)
+        return newMatrix
     }
 
     function rotateRigth() {
         let {crrPiece} = state
-        let piece = []
+        let newPiece = rotateMatrix(crrPiece.piece)
         
-        for (let col = 0; col < crrPiece.piece[0].length; col++){
-            let newRow = []
-            for (let row = 0; row < crrPiece.piece.length; row++){
-                newRow.unshift(crrPiece.piece[row][col])
-            }
-            piece.push(newRow)
-        }
-        
-        state.crrPiece.piece = piece
+        let fieldPosition = realPosition(newPiece, crrPiece.pos)
+        if (!isTouchingDeadPieces(fieldPosition))
+            state.crrPiece.piece = newPiece
     }
 
     function rotateLeft() {
-        rotateRigth()
-        rotateRigth()
-        rotateRigth()
+        let {crrPiece} = state
+        let newPiece = rotateMatrix(crrPiece.piece)
+        newPiece = rotateMatrix(newPiece)
+        newPiece = rotateMatrix(newPiece)
+
+        let fieldPosition = realPosition(newPiece, crrPiece.pos)
+        if (!isTouchingDeadPieces(fieldPosition))
+            state.crrPiece.piece = newPiece
     }
 
     function clearRow(index) {
@@ -242,16 +259,15 @@ function createGame() {
         }
     }
     
-    function realPosition() {
-        let {crrPiece} = state
+    function realPosition(piece, pos) {
         let fieldPositions = []
         
-        for (let row in crrPiece.piece) {
-            for (let col in crrPiece.piece[0]) {
-                let fieldX = crrPiece.x + parseInt(col)
-                let fieldY = crrPiece.y + parseInt(row)
+        for (let row in piece) {
+            for (let col in piece[0]) {
+                let fieldX = pos.x + parseInt(col)
+                let fieldY = pos.y + parseInt(row)
                 
-                if (crrPiece.piece[row][col])
+                if (piece[row][col])
                     fieldPositions.push([fieldX,fieldY])
             }
         }
