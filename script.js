@@ -1,5 +1,5 @@
 const CELL_SIZE = 30
-const FRAME_RATE = 1000
+const FRAME_RATE = 500
 const BACKGROUND_COLOR = "darkslategrey"
 
 function render(context, field) {
@@ -137,11 +137,10 @@ function createGame() {
     }
 
     function update() {
-        checkGameOver()
-        checkCompleteLines()
-        checkDeadPiece()
         clearField()
         placePieceOnField()
+        checkGameOver()
+        checkDeadPiece()
     }
 
     function moveDown() {
@@ -175,7 +174,8 @@ function createGame() {
             })
             
             state.deadPieces = [...state.deadPieces, ...deadPieces]
-            getNewPiece()
+            checkCompleteLines()
+            getNewPiece()  
         }    
     }
     
