@@ -1,4 +1,4 @@
-const CELL_SIZE = 30
+const CELL_SIZE = 25
 const FRAME_RATE = 500
 const BACKGROUND_COLOR = "darkslategrey"
 
@@ -309,6 +309,8 @@ let gameLoop = null;
 
 canvas.height = game.state.field.length * CELL_SIZE
 canvas.width = game.state.field[0].length * CELL_SIZE
+
+render(context, game.state.field)
 
 function SetGameLoop() {
     
