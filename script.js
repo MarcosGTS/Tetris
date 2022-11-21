@@ -1,8 +1,12 @@
 const CELL_SIZE = 25
+const QUEUE_MAX = 3
 const FRAME_RATE = 500
 const BACKGROUND_COLOR = "darkslategrey"
 
-function render(context, field) {
+function render(context, game) {
+    const field = game.state.field
+    const queue = game.state.field
+    
     for(let row in field) {
         for (let col in field[0]) {
             context.fillStyle = field[row][col] || BACKGROUND_COLOR
@@ -11,6 +15,18 @@ function render(context, field) {
             context.strokeRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
         }
     }
+
+    // for (let i = 0; i < queue.length; i++) {
+    //     let piece = queue[i]
+    //     for(let row in piece) {
+    //         for (let col in piece[0]) {
+    //             context.fillStyle = field[row][col] || BACKGROUND_COLOR
+    //             context.strokeStyle = "black"
+    //             context.fillRect((10 + col) * CELL_SIZE , (row * 2 * i) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+    //             context.strokeRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+    //         }
+    //     }
+    // }
 }
 
 function pickRandom(list) {
@@ -47,7 +63,8 @@ function createGame() {
             piece: null,
             pos:{x: 2, y: 3,},
             color: "red"
-        }
+        },
+        queue: [],
 
     }
 
@@ -93,6 +110,8 @@ function createGame() {
         },
     ]
 
+    //Initial queue
+    queuePiece()
     getNewPiece()
 
     function placePieceOnField() {
@@ -195,13 +214,24 @@ function createGame() {
         return false
     }
 
+    function queuePiece() {
+        while (state.queue.length < QUEUE_MAX) {
+            let piece = pickRandom(pieces)
+            if (!state.queue.includes(piece)) {
+                state.queue.push(piece)
+            }
+        }
+    }
+
     function getNewPiece() {
-        let piece = pickRandom(pieces)
+        let piece = state.queue.shift()
         let color = piece.color
 
         state.crrPiece.piece = piece.shape.map(el => [...el])
         state.crrPiece.color = color
         state.crrPiece.pos.y = -3
+
+        queuePiece()
     }
 
     function rotateMatrix(matrix) {
@@ -308,9 +338,8 @@ let game = createGame()
 let gameLoop = null;
 
 canvas.height = game.state.field.length * CELL_SIZE
-canvas.width = game.state.field[0].length * CELL_SIZE
-
-render(context, game.state.field)
+canvas.width = game.state.field[0].length * CELL_SIZE + 500
+render(context, game)
 
 function SetGameLoop() {
     
@@ -322,7 +351,7 @@ function SetGameLoop() {
 
     game.moveDown()
     game.update()
-    render(context, game.state.field)
+    render(context, game)
     gameLoop = setTimeout(SetGameLoop, FRAME_RATE)
 }
 
@@ -344,5 +373,5 @@ document.addEventListener("keydown", (event) => {
     if (functions[event.key]) functions[event.key]();
 
     game.update()
-    render(context, game.state.field)
+    render(context, game)
 })
