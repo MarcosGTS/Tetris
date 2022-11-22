@@ -1,13 +1,16 @@
-const CELL_SIZE = 25
+const CELL_SIZE = 22
 const QUEUE_MAX = 3
 const FRAME_RATE = 500
 const BACKGROUND_COLOR = "darkslategrey"
 
 function render(context, game) {
-    context.clearRect(0, 0, canvas.width, canvas.height)
+    
     const field = game.state.field
     const queue = game.state.queue
+    const score = game.state.score
     
+    context.clearRect(0, 0, canvas.width, canvas.height)
+
     for(let row in field) {
         for (let col in field[0]) {
             context.fillStyle = field[row][col] || BACKGROUND_COLOR
@@ -30,6 +33,10 @@ function render(context, game) {
             }
         }
     }
+
+    //Update score 
+    let scoreElement = document.getElementById("score")
+    scoreElement.innerText = score
 }
 
 function pickRandom(list) {
@@ -62,6 +69,7 @@ function createGame() {
             ["","","","","","","","","",""],
             ["","","","","","","","","",""],],
         deadPieces: [],
+        score:0,
         crrPiece:{
             piece: null,
             pos:{x: 2, y: 3,},
@@ -73,18 +81,21 @@ function createGame() {
 
     let pieces = [
         {
-            shape: [["*", "*", ""],
-                    ["", "*", "*"]],
+            shape: [["" , "*"],
+                    ["*", "*"],
+                    ["*", ""]],
             color: "red",
         },
         {
-            shape: [["", "*", "*"],
-                    ["*", "*", ""]],
+            shape: [["*" , ""],
+                    ["*", "*"],
+                    ["", "*"]],
             color: "aqua",
         },
         {
-            shape: [["", "*", ""],
-                    ["*", "*", "*"]],
+            shape: [["*", ""],
+                    ["*", "*"],
+                    ["*", ""]],
             color: "orange",
         },
         {
@@ -232,6 +243,7 @@ function createGame() {
 
         state.crrPiece.piece = piece.shape.map(el => [...el])
         state.crrPiece.color = color
+        state.crrPiece.pos.x = Math.floor(state.field[0].length/2) 
         state.crrPiece.pos.y = -3
 
         queuePiece()
@@ -280,6 +292,7 @@ function createGame() {
             return piece
         })
         state.deadPieces = deadPieces
+        state.score++
     }
 
     function checkCompleteLines() {

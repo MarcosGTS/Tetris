@@ -20,6 +20,11 @@ h1 {
     margin: 16px;
 }
 
+canvas {
+    border: rgb(0, 1, 19) 11px solid;
+    border-radius: 2px;
+}
+
 button {
     margin-top: 16px;
     color: whitesmoke;
