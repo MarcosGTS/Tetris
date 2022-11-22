@@ -4,8 +4,9 @@ const FRAME_RATE = 500
 const BACKGROUND_COLOR = "darkslategrey"
 
 function render(context, game) {
+    context.clearRect(0, 0, canvas.width, canvas.height)
     const field = game.state.field
-    const queue = game.state.field
+    const queue = game.state.queue
     
     for(let row in field) {
         for (let col in field[0]) {
@@ -16,17 +17,19 @@ function render(context, game) {
         }
     }
 
-    // for (let i = 0; i < queue.length; i++) {
-    //     let piece = queue[i]
-    //     for(let row in piece) {
-    //         for (let col in piece[0]) {
-    //             context.fillStyle = field[row][col] || BACKGROUND_COLOR
-    //             context.strokeStyle = "black"
-    //             context.fillRect((10 + col) * CELL_SIZE , (row * 2 * i) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
-    //             context.strokeRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
-    //         }
-    //     }
-    // }
+    for (let i = 0; i < queue.length; i++) {
+        let piece = queue[i]
+
+        for(let row = 0; row < piece.shape.length; row++) {
+            for (let col = 0; col < piece.shape[0].length; col++) {
+                if (!piece.shape[row][col]) continue
+                context.fillStyle = piece.color
+                context.strokeStyle = "black"
+                context.fillRect((11 + col) * CELL_SIZE , (row + i*5 + 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                context.strokeRect((11 + col) * CELL_SIZE , (row + i*5 + 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+            }
+        }
+    }
 }
 
 function pickRandom(list) {
@@ -338,7 +341,7 @@ let game = createGame()
 let gameLoop = null;
 
 canvas.height = game.state.field.length * CELL_SIZE
-canvas.width = game.state.field[0].length * CELL_SIZE + 500
+canvas.width = (game.state.field[0].length + 4) * CELL_SIZE 
 render(context, game)
 
 function SetGameLoop() {
