@@ -170,6 +170,7 @@ function createGame() {
     }
 
     function update() {
+        if (state.running == false) return
         clearField()
         placePieceOnField()
         checkGameOver()
