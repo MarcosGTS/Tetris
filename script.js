@@ -1,6 +1,7 @@
 const CELL_SIZE = 22
 const QUEUE_MAX = 3
 const FRAME_RATE = 500
+const HARD_FRAME_RATE = 20
 const BACKGROUND_COLOR = "darkslategrey"
 
 function render(context, game) {
@@ -330,6 +331,12 @@ function createGame() {
         return true
     }
 
+    function getDifficulty() {
+        const max_lines = 50
+        const difficulty_rate = Math.min(state.score / max_lines, 1)
+        return FRAME_RATE + (HARD_FRAME_RATE - FRAME_RATE) * difficulty_rate
+    }
+
     function checkGameOver() {
         let isGameOver = state.deadPieces.some((piece) => piece.y < 0)    
         if (isGameOver) state.running = false
@@ -344,6 +351,7 @@ function createGame() {
         moveDown,
         rotateLeft,
         rotateRigth,
+        getDifficulty,
     }
 }
 
@@ -369,7 +377,7 @@ function SetGameLoop() {
     game.moveDown()
     game.update()
     render(context, game)
-    gameLoop = setTimeout(SetGameLoop, FRAME_RATE)
+    gameLoop = setTimeout(SetGameLoop, game.getDifficulty())
 }
 
 start.addEventListener("click", () =>  {
