@@ -175,11 +175,12 @@ function createGame() {
         clearField()
         placePieceOnField()
         checkGameOver()
-        checkDeadPiece()
     }
 
     function moveDown() {
-        state.crrPiece.pos.y++
+        const {crrPiece} = state
+        checkDeadPiece()
+        crrPiece.pos.y++
     }
 
     function moveLeft() {
@@ -206,6 +207,7 @@ function createGame() {
         let futurePositions = positions.map(([x, y]) => [x, y + 1])
         
         let bottom = state.field.length
+
         if (futurePositions.some(([x, y]) => y >= bottom || isTouchingDeadPieces(futurePositions))) {
             const deadPieces = positions.map(([x, y]) => {
                 return {x, y, color: state.crrPiece.color}
@@ -213,8 +215,9 @@ function createGame() {
             
             state.deadPieces = [...state.deadPieces, ...deadPieces]
             checkCompleteLines()
-            getNewPiece()  
-        }    
+            getNewPiece()
+            return   
+        }
     }
     
     function isTouchingDeadPieces(pieces) {
@@ -262,7 +265,6 @@ function createGame() {
             newMatrix.push(newRow)
         }
 
-        console.log(newMatrix)
         return newMatrix
     }
 
@@ -376,6 +378,7 @@ function SetGameLoop() {
 
     game.moveDown()
     game.update()
+   
     render(context, game)
     gameLoop = setTimeout(SetGameLoop, game.getDifficulty())
 }
