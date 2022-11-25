@@ -1,7 +1,7 @@
 # Tetris 
 Tetris made with javascript
 
-## How to playr:
+## How to play:
 
 * **Z, X** : Rotation
 
